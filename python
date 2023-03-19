@@ -1,0 +1,98 @@
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GdkPixbuf # type: ignore
+
+class HotelManagementApp(Gtk.Window):
+
+    def __init__(self):
+        Gtk.Window.__init__(self, title="Gestion Hôtelière")
+        self.set_default_size(800, 600)
+
+        # Création de la barre de navigation
+        headerbar = Gtk.HeaderBar()
+        headerbar.set_show_close_button(True)
+        headerbar.props.title = "Gestion Hôtelière"
+        self.set_titlebar(headerbar)
+
+        # Création des boutons de la barre de navigation
+        checkout_button = Gtk.Button(label="Check-out (départ)")
+        headerbar.pack_start(checkout_button)
+
+        checkin_button = Gtk.Button(label="Check-in (arrivée)")
+        headerbar.pack_start(checkin_button)
+
+        reservations_button = Gtk.Button(label="Réservations")
+        headerbar.pack_start(reservations_button)
+
+        customers_button = Gtk.Button(label="Clients")
+        headerbar.pack_start(customers_button)
+
+        rooms_button = Gtk.Button(label="Chambres")
+        headerbar.pack_start(rooms_button)
+
+        # Création de la vue principale
+        self.stack = Gtk.Stack()
+        self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
+
+        # Ajout des vues de chaque fonctionnalité
+        checkout_view = Gtk.EventBox()
+        self.add_image(checkout_view, "checkout.jpg")
+        self.stack.add_titled(checkout_view, "checkout", "Check-out (départ)")
+
+        checkin_view = Gtk.EventBox()
+        self.add_image(checkin_view, "checkin.jpg")
+        self.stack.add_titled(checkin_view, "checkin", "Check-in (arrivée)")
+
+        reservations_view = Gtk.EventBox()
+        self.add_image(reservations_view, "reservations.jpg")
+        self.stack.add_titled(reservations_view, "reservations", "Réservations")
+
+        customers_view = Gtk.EventBox()
+        self.add_image(customers_view, "customers.jpg")
+        self.stack.add_titled(customers_view, "customers", "Clients")
+
+        rooms_view = Gtk.EventBox()
+        self.add_image(rooms_view, "rooms.jpg")
+        self.stack.add_titled(rooms_view, "rooms", "Chambres")
+
+        # Ajout de la vue principale à la fenêtre
+        self.add(self.stack)
+
+        # Connexion des boutons à leur vue respective
+        checkout_button.connect("clicked", self.show_checkout_view)
+        checkin_button.connect("clicked", self.show_checkin_view)
+        reservations_button.connect("clicked", self.show_reservations_view)
+        customers_button.connect("clicked", self.show_customers_view)
+        rooms_button.connect("clicked", self.show_rooms_view)
+
+        # Affichage de la vue "Clients" au démarrage
+        self.stack.set_visible_child_name("customers")
+
+    def add_image(self, widget, image_path):
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=image_path, 
+            width=800, 
+            height=600, 
+            preserve_aspect_ratio=True)
+        image = Gtk.Image.new_from_pixbuf(pixbuf)
+        widget.add(image)
+
+    def show_checkout_view(self, button):
+        self.stack.set_visible_child_name("checkout")
+
+    def show_checkin_view(self, button):
+        self.stack.set_visible_child_name("checkin")
+
+    def show_reservations_view(self, button):
+        self.stack.set_visible_child_name("reservations")
+
+    def show_customers_view(self, button):
+        self.stack.set_visible_child_name("customers")
+        
+    def show_rooms_view(self, button):
+        self.stack.set_visible_child_name("rooms")
+        
+win = HotelManagementApp()
+win.connect("destroy", Gtk.main_quit)
+win.show_all()
+Gtk.main()
